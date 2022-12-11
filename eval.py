@@ -54,7 +54,7 @@ def main(inputFile,queryRel,outputFile):
         return dcg
 
 
-    def precision(docs):
+    def precision(docs,k):
         if len(docs) == 0:
             return 0
 
@@ -63,7 +63,7 @@ def main(inputFile,queryRel,outputFile):
             if score > 0:
                 num_rel += 1
 
-        return num_rel/len(docs)
+        return num_rel/k
 
     def recall(docs,query):
         if total_rel[query] == 0:
@@ -92,7 +92,6 @@ def main(inputFile,queryRel,outputFile):
     '''
     TOTAL_NDCG,TOTAL_RR,TOTAL_P15,TOTAL_R20,TOTAL_F1,TOTAL_AP = [0]*6
     for query,docs in queries.items():
-        #only_rel[query].sort(key = lambda x: x[1])
         ideal_rank[query].sort(key = lambda x: x[2])
         NDCG = get_dcg(docs[:75])/get_dcg(ideal_rank[query][:75]) if total_rel[query] > 0 else 0
         TOTAL_NDCG += NDCG
@@ -100,13 +99,13 @@ def main(inputFile,queryRel,outputFile):
         RR = 1/only_rel[query][0][1] if len(only_rel[query]) > 0 else 0
         TOTAL_RR += RR
 
-        P_15 = precision(docs[:15])
+        P_15 = precision(docs[:15],15)
         TOTAL_P15 += P_15
         
         R_20 = recall(docs[:20],query)
         TOTAL_R20 += R_20
 
-        P_25 = precision(docs[:25])
+        P_25 = precision(docs[:25],25)
         R_25 = recall(docs[:25],query)
 
         F1_25 = (2*R_25*P_25) / (R_25+P_25) if R_25+P_25 > 0 else 0
@@ -145,3 +144,6 @@ if __name__ == '__main__':
     if os.path.exists(outputFile):
         os.remove(outputFile)
     main(inputFile,queryRel,outputFile)
+    #python eval.py bm25.trecrun qrels bm25.eval
+    #python eval.py ql.trecrun qrels ql.eval
+    #python eval.py sdm.trecrun qrels sdm.eval
