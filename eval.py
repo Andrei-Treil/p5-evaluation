@@ -20,7 +20,7 @@ def main(inputFile,queryRel,outputFile):
             relevance[qname+docid] = int(rel)
             if int(rel) > 0:
                 total_rel[qname] += 1
-                ideal_rank[qname].append((docid,skip,int(rel)))
+            ideal_rank[qname].append((docid,skip,int(rel)))
             
             
     #store only the relevant results for each query
@@ -113,7 +113,6 @@ def main(inputFile,queryRel,outputFile):
 
         AP = ap[query]/total_rel[query] if total_rel[query] > 0 else 0
         TOTAL_AP += AP
-
 
         
         with open(outputFile,'a') as f:
